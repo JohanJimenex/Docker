@@ -1,0 +1,35 @@
+# Este es un archivo que contiene un compose, ya predeterminada para
+# que instale todo automaticamente y no tener los comandos guardados en notas
+# Al usar docker compose up para ejecutar este archivo , automaticmanete crea una nueva red y los enlaza en la misma red.
+version: "3"
+
+services: # los services en esta sección se colocan  todos los contenedores e imagenes  que vamos a instalar
+  db: # nombre de del servicio, esto es un nombre unico para este archivo que adenteo tednrá el contenedor y su imagen
+    container_name: postgres_database #nombre del contenedor personalizado
+    image: postgres:15.1 # nombre de la imagen/aplicación que vamos a instalar
+    #ports:
+    #  - "5432:5432" #  en este caso no le especificamos un puerto porque solo lo necesitamos interno ya que quien se contectará de manera interna es el phpMyAdmin o PgAdmin
+    volumes: # los volumenes son espacios en el disco para mantener la data, existen 3, anonimos, con nombre y Bind
+      # - postgres-db:/var/lib/postgresql/data # ejemplo
+      # con nombre, le colocamos un nombre personalizado, y debemos matchearlo con el path de origen donde lo guarda
+      # por defecto, esto creadrá una carpeta en los folders de Dockers y guardará los datos ahí permanente
+      - ./postgres:/var/lib/postgresql/data #Bind esto lo guarda en una carpeta en especifica, en este caso en nuestro proyecto
+    environment: #variables de entorno, por el momento se debe llamar la variable que ya exista dentro de la imagen , lo establece el creador de la imagen
+      - POSTGRES_PASSWORD=123456 # una variable de la clave, puede existir mas variables pero hay que leer la documentación
+
+  pgAdmin: # otro servicio para agregar el contenedor e imagen de Pgadmin o PhPmyAdmin por ejemplo
+    depends_on: # Esta propeitad asegurara que se ejecute primero lo de arriba que es mi dependencia o sea mi DB
+      - db # se coloca el nombre del servicio
+    container_name: miNombreDelContenedor
+    image: dpage/pgadmin4:6.17 #instalamos la imagen
+    ports: # Cad aimagen viene configurada con un puerto del lado de docker, y debemos enlazarlo a nuestro puerto local,
+      - "8080:80" # entrariamos con localhos:8080,  tambien se puede colocar  un rango que coja del "8100-8200:80"
+      #- "8081:80" # se pueden agregar mas puertos si fuese necesario"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_DEFAULT_EMAIL=superman@google.com
+# volumes:
+#   postgres-db:
+#     external: true

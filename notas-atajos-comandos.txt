@@ -1,0 +1,13 @@
+
+
+
+
+docker container run \
+--name miMariaDB \
+-e MARIA_USER="johan" \
+-dp 330:3306 \
+--volume dataPersistenteDeMariaDB:var/lib/mysql \
+--network miRED \
+mariadb:jammy
+
+
